@@ -1,0 +1,375 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>CXM — Jahon bozorlariga kirish — Ostav'te telefon</title>
+<style>
+  :root{
+    --bg:#021430;
+    --panel:#071a3a;
+    --muted:#cfe3ff;
+    --accent:#FFD24D;
+    --accent-2:#f7c400;
+    --glass:rgba(255,255,255,0.03);
+    --radius:14px;
+    --maxw:1100px;
+    --transition:180ms cubic-bezier(.2,.9,.3,1);
+    --success:#b9e986;
+    --error:#ff9a9a;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;
+    font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    background: linear-gradient(180deg,var(--bg) 0%, #052248 100%);
+    color:var(--muted);
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+    display:flex;
+    align-items:flex-start;
+    justify-content:center;
+    min-height:100vh;
+    padding:calc(18px + env(safe-area-inset-top, 0px)) 18px calc(18px + env(safe-area-inset-bottom, 0px));
+    overflow-y:auto;
+  }
+
+  .card{
+    width:100%;
+    max-width:var(--maxw);
+    display:grid;
+    grid-template-columns: 1fr 540px;
+    gap:28px;
+    align-items:stretch;
+    margin-top:12px;
+  }
+  .brand-panel,
+  .form-panel{
+    background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border-radius:var(--radius);
+    padding:24px;
+    border:1px solid rgba(255,255,255,0.03);
+    box-shadow:0 20px 60px rgba(0,0,0,0.5);
+  }
+
+  .brand-top{ display:flex; gap:16px; align-items:center; }
+  .logo-box{ width:108px; height:108px; border-radius:12px; background:linear-gradient(135deg,#062d4e,var(--accent)); display:flex; align-items:center; justify-content:center; flex-shrink:0; color:#021430; font-weight:900; font-size:28px;}
+  .brand-title{ color:var(--accent); font-size:22px; font-weight:800; margin:0; }
+  .brand-sub{ font-size:14px; color:var(--muted); margin-top:4px; }
+
+  .bullets{ display:grid; gap:12px; margin-top:12px; }
+  .bullet{ display:flex; gap:12px; align-items:flex-start; }
+  .bullet .ico{ width:44px; height:44px; border-radius:10px; background:rgba(255,255,255,0.02); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .bullet strong{ display:block; color:#fff; font-size:15px; }
+  .bullet p{ margin:0; color:var(--muted); font-size:13px; margin-top:4px; }
+
+  .contacts{ margin-top:auto; border-top:1px dashed rgba(255,255,255,0.03); padding-top:12px; color:var(--muted); font-size:14px; display:flex; flex-direction:column; gap:8px; }
+  .contacts a{ color:var(--muted); text-decoration:none; font-weight:700; }
+  .contacts .small{ color:rgba(255,255,255,0.7); font-size:13px; }
+
+  .form-header{ display:flex; justify-content:space-between; align-items:flex-start; gap:10px; margin-bottom:6px; }
+  .form-title{ color:var(--accent); font-weight:800; font-size:20px; margin:0; }
+  .form-sub{ font-size:13px; color:var(--muted); }
+
+  .lang-switch{ display:flex; gap:8px; }
+  .lang-btn{
+    background:transparent;
+    border:1px solid rgba(255,255,255,0.06);
+    color:var(--muted);
+    padding:7px 12px;
+    border-radius:10px;
+    cursor:pointer;
+    font-weight:700;
+  }
+  .lang-btn.active{ background:var(--accent); color:#021430; border-color:var(--accent); }
+
+  form{ display:grid; grid-template-columns: repeat(2,1fr); gap:12px; margin-top:12px; }
+  label{ font-size:13px; color:var(--muted); font-weight:700; display:block; margin-bottom:6px; }
+  .field{ position:relative; }
+
+  input[type="text"], input[type="tel"], select, textarea{
+    width:100%;
+    padding:12px 14px;
+    border-radius:10px;
+    border:none;
+    background: rgba(255,255,255,0.03);
+    color:var(--muted);
+    font-size:14px;
+    outline:none;
+    transition: box-shadow var(--transition), transform var(--transition);
+  }
+  input:focus, select:focus, textarea:focus{
+    box-shadow: 0 10px 30px rgba(0,0,0,0.55), 0 0 0 4px rgba(255,210,77,0.06);
+    transform: translateY(-1px);
+  }
+
+  .full{ grid-column:1 / -1; }
+  .left-ico{ position:absolute; left:12px; top:50%; transform:translateY(-50%); width:20px; height:20px; pointer-events:none; opacity:0.95; }
+  input.with-ico{ padding-left:44px; }
+
+  .actions{ display:flex; gap:12px; align-items:center; margin-top:8px; }
+  .btn-primary{
+    background: linear-gradient(90deg,var(--accent),var(--accent-2));
+    color:#021430;
+    padding:14px 18px;
+    border-radius:10px;
+    border:none;
+    cursor:pointer;
+    font-weight:800;
+    box-shadow:0 10px 30px rgba(0,0,0,0.35);
+  }
+  .btn-ghost{ background:transparent; border:1px solid rgba(255,255,255,0.06); color:var(--muted); padding:12px 14px; border-radius:10px; cursor:pointer; }
+
+  .status{ margin-top:10px; font-weight:700; color:var(--success); }
+
+  @media(max-width:1024px){
+    .card{ grid-template-columns: 1fr; }
+    .brand-panel{ order:2; }
+    .form-panel{ order:1; }
+  }
+  @media(max-width:640px){
+    body{ padding:18px; }
+    .logo-box{ width:84px; height:84px; }
+    .form-title{ font-size:18px; }
+    form{ grid-template-columns:1fr; gap:10px; }
+    .contacts{ font-size:13px; }
+  }
+
+  .error{ color:var(--error); font-weight:700; font-size:13px; }
+  a.cta-link{ color:var(--accent); text-decoration:none; font-weight:800; }
+</style>
+</head>
+<body>
+  <div class="card" role="main" aria-labelledby="mainTitle">
+    <!-- BRAND -->
+    <aside class="brand-panel" aria-label="brand panel">
+      <div class="brand-top">
+        <div class="logo-box">CXM</div>
+        <div>
+          <h1 id="mainTitle" class="brand-title">CXM</h1>
+          <div id="brandSub" class="brand-sub">Jahon bozorlariga kirish • FX · Oltin · CFD</div>
+        </div>
+      </div>
+
+      <div class="bullets" aria-hidden="false">
+        <div class="bullet">
+          <div class="ico" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 2a10 10 0 100 20 10 10 0 000-20z" stroke="#FFD24D" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div><strong>FX, Oltin va CFD</strong><p class="muted">To‘liq global likvidlik va instrumentlar.</p></div>
+        </div>
+
+        <div class="bullet">
+          <div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 6v6l4 2" stroke="#FFD24D" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div><strong>Cheksiz kredit yelkasi</strong><p class="muted">Moslashuvchan leverage — savdo strategiyangizga mos.</p></div>
+        </div>
+
+        <div class="bullet">
+          <div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3 12h18M12 3v18" stroke="#FFD24D" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div><strong>Demo & Real hisob</strong><p class="muted">Boshlang‘ich demo — real bozor sharoitida mashq qiling.</p></div>
+        </div>
+
+        <div class="bullet">
+          <div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 2l3 7h7l-5.5 4 2 7L12 17l-6.5 3 2-7L2 9h7z" stroke="#FFD24D" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div><strong>Shaxsiy menejer</strong><p class="muted">Har bir yangi mijozga personal manager.</p></div>
+        </div>
+      </div>
+
+      <div class="contacts">
+        <div><strong>Veb:</strong> <a href="http://bit.ly/4g5XC6F" target="_blank" rel="noopener" class="cta-link">bit.ly/4g5XC6F</a></div>
+        <div><strong>Instagram:</strong> <a href="https://www.instagram.com/cxm.uz" target="_blank" rel="noopener" class="cta-link">@cxm.uz</a></div>
+        <div><strong>Telegram:</strong> <a href="https://t.me/cxm_support" target="_blank" rel="noopener" class="cta-link">@cxm_support</a></div>
+        <div class="small"><strong>Since:</strong> 2024 • <a href="#" class="cta-link">Trust & Security</a></div>
+      </div>
+    </aside>
+
+    <!-- FORM -->
+    <section class="form-panel" aria-labelledby="formTitle">
+      <div>
+        <div class="form-header">
+          <div>
+            <div id="formTitle" class="form-title">Oson ro'yxatdan o'tish</div>
+            <div id="formSubtitle" class="form-sub">Ismingiz va telefonni qoldiring — biz 15 daqiqa ichida bog'lanamiz</div>
+          </div>
+
+          <div class="lang-switch" role="tablist" aria-label="Language switch">
+            <button class="lang-btn active" data-lang="uz" aria-pressed="true" type="button">🇺🇿 UZ</button>
+            <button class="lang-btn" data-lang="ru" aria-pressed="false" type="button">🇷🇺 RU</button>
+          </div>
+        </div>
+
+        <form id="leadForm" onsubmit="event.preventDefault(); sendData();" novalidate>
+          <div class="full field">
+            <label id="lab_name" for="name">Ism (ixtiyoriy)</label>
+            <div style="position:relative;">
+              <span class="left-ico" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 12a5 5 0 100-10 5 5 0 000 10zM2 22a10 10 0 0120 0" stroke="#fff" stroke-opacity="0.9" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </span>
+              <input id="name" class="with-ico" type="text" placeholder="Ismingiz (Masalan: Ali)" />
+            </div>
+          </div>
+
+          <div class="full field">
+            <label id="lab_phone" for="phone">Telefon raqam (WhatsApp/Telegram)</label>
+            <div style="position:relative;">
+              <span class="left-ico" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M22 16.92V20a2 2 0 01-2.18 2 19.8 19.8 0 01-8.63-3.07 19.5 19.5 0 01-6-6A19.8 19.8 0 012 4.18 2 2 0 014 2h3.09a2 2 0 012 1.72c.12.98.38 1.93.78 2.82a2 2 0 01-.45 2.11L9.91 10.9a16 16 0 006 6l1.28-1.28a2 2 0 012.11-.45c.9.4 1.84.66 2.82.78A2 2 0 0122 16.92z" stroke="#fff" stroke-opacity="0.9" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </span>
+              <input id="phone" class="with-ico" type="tel" placeholder="+998 90 123 4567" required />
+            </div>
+            <div id="err_phone" class="error" style="display:none"></div>
+          </div>
+
+          <div class="full">
+            <div class="actions">
+              <button id="sendBtn" class="btn-primary" type="submit">📩 Olish</button>
+              <button type="button" class="btn-ghost" onclick="document.getElementById('leadForm').reset(); applyLang();">Tozalash</button>
+            </div>
+            <div id="status" class="status" role="status" aria-live="polite"></div>
+            <div class="small" style="margin-top:8px">Boshlang'ich demo va bonus — faqat yangi mijozlar uchun.</div>
+          </div>
+        </form>
+      </div>
+    </section>
+  </div>
+
+<script>
+/* ----------------- Telegram: вставьте свои значения -----------------
+   Быстрое тестирование: можно вставить BOT_TOKEN/CHAT_ID прямо сюда.
+   ⚠️ Токен будет виден в коде — для публичного сайта используйте серверный прокси.
+*/
+const BOT_TOKEN = "8527647378:AAEY_gPcD7sjGDxf1eMiEIFO2A6sAlyuX64"; // <-- Замените на ваш токен
+const CHAT_ID   = "-1003465583127";   // <-- Замените на ваш chat_id, пример: -1001234567890
+/* ----------------------------------------------------------------- */
+
+/* Локализация (UZ + RU) */
+const LANG = {
+  uz:{
+    brandSub: "Jahon bozorlariga kirish • FX · Oltin · CFD",
+    formTitle: "Oson ro'yxatdan o'tish",
+    formSubtitle: "Ismingiz va telefonni qoldiring — biz 15 daqiqa ichida bog'lanamiz",
+    send: "📩 Olish",
+    sending: "Yuborilmoqda...",
+    success: "✅ So‘rovingiz qabul qilindi! Tez orada bog'lanamiz.",
+    fillPhone: "Iltimos, telefon raqamini kiriting."
+  },
+  ru:{
+    brandSub: "Доступ к мировым рынкам • FX · Золото · CFD",
+    formTitle: "Быстрая заявка",
+    formSubtitle: "Оставьте имя и телефон — мы свяжемся в течение 15 минут",
+    send: "📩 Получить",
+    sending: "Отправка...",
+    success: "✅ Заявка принята! Мы свяжемся с вами в ближайшее время.",
+    fillPhone: "Пожалуйста, укажите номер телефона."
+  }
+};
+
+let lang = 'uz';
+const elems = {
+  brandSub: document.getElementById('brandSub'),
+  formTitle: document.getElementById('formTitle'),
+  formSubtitle: document.getElementById('formSubtitle'),
+  sendBtn: document.getElementById('sendBtn'),
+  name: document.getElementById('name'),
+  phone: document.getElementById('phone'),
+  status: document.getElementById('status'),
+  err_phone: document.getElementById('err_phone')
+};
+
+/* Language switch */
+document.querySelectorAll('.lang-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.lang-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    lang = btn.dataset.lang;
+    applyLang();
+  });
+});
+
+function applyLang(){
+  const t = LANG[lang];
+  elems.brandSub.textContent = t.brandSub;
+  elems.formTitle.textContent = t.formTitle;
+  elems.formSubtitle.textContent = t.formSubtitle;
+  document.getElementById('lab_name').textContent = lang === 'uz' ? 'Ism (ixtiyoriy)' : 'Имя (необязательно)';
+  document.getElementById('lab_phone').textContent = lang === 'uz' ? 'Telefon raqam (WhatsApp/Telegram)' : 'Телефон (WhatsApp/Telegram)';
+  document.getElementById('sendBtn').textContent = t.send;
+  elems.status.textContent = '';
+  elems.err_phone.style.display = 'none';
+}
+applyLang();
+
+/* Validate basic phone */
+function validatePhone(phone){
+  if(!phone) return false;
+  const digits = phone.replace(/\D/g,'');
+  return digits.length >= 7 && digits.length <= 15;
+}
+
+/* Escape HTML */
+function esc(s){
+  if(!s) return '';
+  return s.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
+}
+
+/* Send to Telegram */
+async function sendData(){
+  const t = LANG[lang];
+  elems.status.textContent = t.sending;
+  const name = elems.name.value.trim() || '-';
+  const phone = elems.phone.value.trim();
+
+  if(!validatePhone(phone)){
+    elems.err_phone.style.display = 'block';
+    elems.err_phone.textContent = t.fillPhone;
+    elems.status.textContent = '';
+    return;
+  } else {
+    elems.err_phone.style.display = 'none';
+  }
+
+  // Message in HTML format
+  const message =
+    `<b>📈 CXM — New lead</b>\n` +
+    `<b>👤 Ism:</b> ${esc(name)}\n` +
+    `<b>📞 Telefon:</b> ${esc(phone)}\n` +
+    `<b>📎 Source:</b> Landing`;
+
+  try{
+    if(!BOT_TOKEN || BOT_TOKEN === "YOUR_BOT_TOKEN" || !CHAT_ID || CHAT_ID === "YOUR_CHAT_ID"){
+      alert('Пожалуйста, вставьте BOT_TOKEN и CHAT_ID в код перед тестом.');
+      elems.status.textContent = '';
+      return;
+    }
+
+    const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ chat_id: CHAT_ID, text: message, parse_mode: 'HTML' })
+    });
+
+    const json = await res.json();
+    if(json && json.ok){
+      elems.status.style.color = getComputedStyle(document.documentElement).getPropertyValue('--success');
+      elems.status.textContent = t.success;
+      document.getElementById('leadForm').reset();
+      applyLang();
+    } else {
+      elems.status.style.color = getComputedStyle(document.documentElement).getPropertyValue('--error');
+      elems.status.textContent = 'Error: ' + (json && json.description ? json.description : 'Telegram API error');
+    }
+  }catch(err){
+    elems.status.style.color = getComputedStyle(document.documentElement).getPropertyValue('--error');
+    elems.status.textContent = 'Error: ' + err.message;
+  }
+}
+
+/* Submit on Enter */
+document.getElementById('leadForm').addEventListener('keydown', (e)=>{
+  if(e.key === 'Enter' && e.target.tagName !== 'TEXTAREA'){
+    e.preventDefault();
+    sendData();
+  }
+});
+</script>
+</body>
+</html>
